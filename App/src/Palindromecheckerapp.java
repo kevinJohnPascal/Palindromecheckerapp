@@ -1,23 +1,31 @@
 public class Palindromecheckerapp {
  public static void main(String[] args) {
-  // 1. Define the input string
-  String original = "radar";
-  String reversed = "";
+  String input = "deified";
 
-  // 2. The Reversal Loop (Core of UC3)
-  // We start at the last index (length - 1) and count down to 0
-  for (int i = original.length() - 1; i >= 0; i--) {
-   // Concept: String Concatenation (+)
-   // Note: Each addition here creates a new String object in memory
-   reversed = reversed + original.charAt(i);
+  // 1. Convert String to Character Array
+  char[] charArray = input.toCharArray();
+
+  // 2. Initialize Two Pointers
+  int start = 0;
+  int end = charArray.length - 1;
+  boolean isPalindrome = true;
+
+  // 3. Two-Pointer Logic
+  while (start < end) {
+   // Compare characters at both ends
+   if (charArray[start] != charArray[end]) {
+    isPalindrome = false;
+    break; // Optimization: stop as soon as a mismatch is found
+   }
+   start++; // Move forward
+   end--;   // Move backward
   }
 
-  // 3. The Comparison
-  // Concept: .equals() compares the letters, not the memory address
-  if (original.equalsIgnoreCase(reversed)) {
-   System.out.println("Result: " + original + " is a palindrome.");
+  // 4. Output Result
+  if (isPalindrome) {
+   System.out.println(input + " is a palindrome.");
   } else {
-   System.out.println("Result: " + original + " is NOT a palindrome.");
+   System.out.println(input + " is not a palindrome.");
   }
  }
 }
