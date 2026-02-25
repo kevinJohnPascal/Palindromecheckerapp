@@ -1,27 +1,49 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class Palindromecheckerapp {
+
  public static void main(String[] args) {
-  String input = "racecar";
+  Scanner scanner = new Scanner(System.in);
+
+  System.out.println("--- UC6: Queue + Stack Based Palindrome Check ---");
+  System.out.print("Enter a string: ");
+  String input = scanner.nextLine();
+
+  if (isPalindrome(input)) {
+   System.out.println("Result: '" + input + "' is a palindrome.");
+  } else {
+   System.out.println("Result: '" + input + "' is NOT a palindrome.");
+  }
+
+  scanner.close();
+ }
+
+ public static boolean isPalindrome(String input) {
+  // Clean the input: remove non-alphanumeric characters and convert to lowercase
+  String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+
+  Queue<Character> queue = new LinkedList<>();
   Stack<Character> stack = new Stack<>();
 
-  // 1. Push: Add all characters of the string into the stack
-  for (int i = 0; i < input.length(); i++) {
-   stack.push(input.charAt(i));
+  // Enqueue and Push each character
+  for (char ch : cleaned.toCharArray()) {
+   queue.add(ch);  // Enqueue
+   stack.push(ch); // Push
   }
 
-  // 2. Pop and Compare: Build the reversed string
-  String reversed = "";
-  while (!stack.isEmpty()) {
-   // Pop removes the top element (the last one pushed)
-   reversed = reversed + stack.pop();
+  // Logical Comparison: Compare FIFO vs LIFO
+  while (!queue.isEmpty()) {
+   char fromQueue = queue.poll(); // Dequeue (First character)
+   char fromStack = stack.pop();  // Pop (Last character)
+
+   if (fromQueue != fromStack) {
+    return false; // Mismatch found
+   }
   }
 
-  // 3. Output Result
-  if (input.equals(reversed)) {
-   System.out.println(input + " is a palindrome.");
-  } else {
-   System.out.println(input + " is not a palindrome.");
-  }
+  return true; // All characters matched
  }
 }
