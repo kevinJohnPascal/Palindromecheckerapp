@@ -1,82 +1,45 @@
 import java.util.Scanner;
 
-class Node {
- char data;
- Node next;
-
- Node(char data) {
-  this.data = data;
-  this.next = null;
- }
-}
-
 public class Palindromecheckerapp {
 
- public static void main(String[] args) {
-  Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
-  System.out.println("--- UC8: Linked List Based Palindrome Checker ---");
-  System.out.print("Enter a string: ");
-  String input = scanner.nextLine();
+        System.out.println("--- UC9: Recursive Palindrome Checker ---");
+        System.out.print("Enter a string: ");
+        String input = scanner.nextLine();
 
-  if (isPalindrome(input)) {
-   System.out.println("Result: '" + input + "' is a palindrome.");
-  } else {
-   System.out.println("Result: '" + input + "' is NOT a palindrome.");
-  }
+        // Normalize input: remove non-alphanumeric and lowercase
+        String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-  scanner.close();
- }
+        if (isPalindromeRecursive(cleaned, 0, cleaned.length() - 1)) {
+            System.out.println("Result: '" + input + "' is a palindrome.");
+        } else {
+            System.out.println("Result: '" + input + "' is NOT a palindrome.");
+        }
 
- public static boolean isPalindrome(String input) {
-  String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-  if (cleaned.isEmpty()) return true;
+        scanner.close();
+    }
 
-  // Step 1: Build the Singly Linked List
-  Node head = new Node(cleaned.charAt(0));
-  Node current = head;
-  for (int i = 1; i < cleaned.length(); i++) {
-   current.next = new Node(cleaned.charAt(i));
-   current = current.next;
-  }
+    /**
+     * Recursive method to check palindrome logic.
+     * @param str The cleaned string
+     * @param start The current left index
+     * @param end The current right index
+     * @return true if palindrome, false otherwise
+     */
+    public static boolean isPalindromeRecursive(String str, int start, int end) {
+        // Base Case 1: If pointers meet or cross, we've checked everything
+        if (start >= end) {
+            return true;
+        }
 
-  // Step 2: Find the middle using Fast & Slow pointers
-  Node slow = head;
-  Node fast = head;
-  while (fast != null && fast.next != null) {
-   slow = slow.next;
-   fast = fast.next.next;
-  }
+        // Base Case 2: If characters at current pointers don't match
+        if (str.charAt(start) != str.charAt(end)) {
+            return false;
+        }
 
-  // Step 3: Reverse the second half of the list
-  Node secondHalf = reverseList(slow);
-  Node firstHalf = head;
-
-  // Step 4: Compare halves
-  Node tempSecond = secondHalf;
-  boolean result = true;
-  while (tempSecond != null) {
-   if (firstHalf.data != tempSecond.data) {
-    result = false;
-    break;
-   }
-   firstHalf = firstHalf.next;
-   tempSecond = tempSecond.next;
-  }
-
-  return result;
- }
-
- // Helper method to reverse a linked list in-place
- private static Node reverseList(Node head) {
-  Node prev = null;
-  Node current = head;
-  while (current != null) {
-   Node nextNode = current.next;
-   current.next = prev;
-   prev = current;
-   current = nextNode;
-  }
-  return prev;
- }
+        // Recursive Step: Move pointers inward and call the method again
+        return isPalindromeRecursive(str, start + 1, end - 1);
+    }
 }
