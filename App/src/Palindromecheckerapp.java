@@ -1,79 +1,82 @@
 import java.util.*;
 
-// 1. Define the Strategy Interface
-interface PalindromeStrategy {
-    boolean isValid(String input);
-}
+public class UseCase13PalindromeCheckerApp {
 
-// 2. Concrete Strategy: Stack-Based
-class StackStrategy implements PalindromeStrategy {
-    @Override
-    public boolean isValid(String input) {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("--- UC13: Performance Comparison ---");
+        System.out.print("Enter a long string to test performance: ");
+        String input = scanner.nextLine();
+
+        // Clean the input once to ensure fairness
         String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-        Stack<Character> stack = new Stack<>();
-        for (char c : cleaned.toCharArray()) stack.push(c);
 
-        for (char c : cleaned.toCharArray()) {
+        System.out.println("\nMeasuring performance for " + cleaned.length() + " characters...\n");
+
+        // Test 1: Iterative (Two-Pointer)
+        long start = System.nanoTime();
+        checkIterative(cleaned);
+        long end = System.nanoTime();
+        System.out.printf("Iterative (Two-Pointer): %d ns\n", (end - start));
+
+        // Test 2: Stack-Based
+        start = System.nanoTime();
+        checkStack(cleaned);
+        end = System.nanoTime();
+        System.out.printf("Stack-Based:           %d ns\n", (end - start));
+
+        // Test 3: Deque-Based
+        start = System.nanoTime();
+        checkDeque(cleaned);
+        end = System.nanoTime();
+        System.out.printf("Deque-Based:           %d ns\n", (end - start));
+
+        // Test 4: Recursive (Note: Can hit StackOverflow if string is too long)
+        try {
+            start = System.nanoTime();
+            checkRecursive(cleaned, 0, cleaned.length() - 1);
+            end = System.nanoTime();
+            System.out.printf("Recursive:             %d ns\n", (end - start));
+        } catch (StackOverflowError e) {
+            System.out.println("Recursive:             Failed (Stack Overflow)");
+        }
+
+        scanner.close();
+    }
+
+    // Iterative Logic - O(1) space
+    public static boolean checkIterative(String str) {
+        int left = 0, right = str.length() - 1;
+        while (left < right) {
+            if (str.charAt(left++) != str.charAt(right--)) return false;
+        }
+        return true;
+    }
+
+    // Stack Logic - O(n) space
+    public static boolean checkStack(String str) {
+        Stack<Character> stack = new Stack<>();
+        for (char c : str.toCharArray()) stack.push(c);
+        for (char c : str.toCharArray()) {
             if (c != stack.pop()) return false;
         }
         return true;
     }
-}
 
-// 3. Concrete Strategy: Deque-Based
-class DequeStrategy implements PalindromeStrategy {
-    @Override
-    public boolean isValid(String input) {
-        String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+    // Deque Logic - O(n) space
+    public static boolean checkDeque(String str) {
         Deque<Character> deque = new ArrayDeque<>();
-        for (char c : cleaned.toCharArray()) deque.addLast(c);
-
+        for (char c : str.toCharArray()) deque.addLast(c);
         while (deque.size() > 1) {
             if (deque.removeFirst() != deque.removeLast()) return false;
         }
         return true;
     }
-}
 
-// 4. Context Class
-class PalindromeContext {
-    private PalindromeStrategy strategy;
-
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean executeStrategy(String input) {
-        return strategy.isValid(input);
-    }
-}
-
-// 5. Main Application
-public class Palindromecheckerapp {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        PalindromeContext context = new PalindromeContext();
-
-        System.out.println("--- UC12: Strategy Pattern Palindrome Checker ---");
-        System.out.print("Enter string: ");
-        String text = scanner.nextLine();
-
-        System.out.println("Choose Strategy: 1) Stack 2) Deque");
-        int choice = scanner.nextInt();
-
-        if (choice == 1) {
-            context.setStrategy(new StackStrategy());
-            System.out.println("Using Stack Strategy...");
-        } else {
-            context.setStrategy(new DequeStrategy());
-            System.out.println("Using Deque Strategy...");
-        }
-
-        if (context.executeStrategy(text)) {
-            System.out.println("Result: It is a palindrome!");
-        } else {
-            System.out.println("Result: Not a palindrome.");
-        }
-        scanner.close();
+    // Recursive Logic - O(n) call stack space
+    public static boolean checkRecursive(String str, int s, int e) {
+        if (s >= e) return true;
+        if (str.charAt(s) != str.charAt(e)) return false;
+        return checkRecursive(str, s + 1, e - 1);
     }
 }
