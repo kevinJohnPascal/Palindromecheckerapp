@@ -1,14 +1,13 @@
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Scanner;
-import java.util.Stack;
 
 public class Palindromecheckerapp {
 
  public static void main(String[] args) {
   Scanner scanner = new Scanner(System.in);
 
-  System.out.println("--- UC6: Queue + Stack Based Palindrome Check ---");
+  System.out.println("--- UC7: Deque-Based Optimized Palindrome Checker ---");
   System.out.print("Enter a string: ");
   String input = scanner.nextLine();
 
@@ -22,28 +21,27 @@ public class Palindromecheckerapp {
  }
 
  public static boolean isPalindrome(String input) {
-  // Clean the input: remove non-alphanumeric characters and convert to lowercase
+  // Step 1: Normalize input (remove spaces/punctuation and lowercase)
   String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-  Queue<Character> queue = new LinkedList<>();
-  Stack<Character> stack = new Stack<>();
+  // Step 2: Initialize Deque
+  Deque<Character> deque = new ArrayDeque<>();
 
-  // Enqueue and Push each character
+  // Step 3: Insert characters into the deque
   for (char ch : cleaned.toCharArray()) {
-   queue.add(ch);  // Enqueue
-   stack.push(ch); // Push
+   deque.addLast(ch);
   }
 
-  // Logical Comparison: Compare FIFO vs LIFO
-  while (!queue.isEmpty()) {
-   char fromQueue = queue.poll(); // Dequeue (First character)
-   char fromStack = stack.pop();  // Pop (Last character)
+  // Step 4: Compare front and rear until 0 or 1 element remains
+  while (deque.size() > 1) {
+   char front = deque.removeFirst();
+   char rear = deque.removeLast();
 
-   if (fromQueue != fromStack) {
-    return false; // Mismatch found
+   if (front != rear) {
+    return false; // Not a palindrome
    }
   }
 
-  return true; // All characters matched
+  return true; // Palindrome confirmed
  }
 }
