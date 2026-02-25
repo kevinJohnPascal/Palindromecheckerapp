@@ -1,40 +1,33 @@
 import java.util.Scanner;
 
-public class Palindromecheckerapp {
+/**
+ * Service class to encapsulate Palindrome logic.
+ * Demonstrates Encapsulation and Reusability.
+ */
+class PalindromeService {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    /**
+     * Public method to check if a string is a palindrome.
+     * Internal implementation details are hidden from the caller.
+     */
+    public boolean checkPalindrome(String input) {
+        if (input == null) return false;
 
-        System.out.println("--- UC10: Case-Insensitive & Space-Ignored Palindrome ---");
-        System.out.print("Enter a string (e.g., 'Race Car' or 'A man, a plan...'): ");
-        String input = scanner.nextLine();
-
-        // Step 1: Normalize the string
-        String cleaned = normalizeString(input);
-
-        System.out.println("Normalized String: " + cleaned);
-
-        // Step 2: Validate using the Two-Pointer approach
-        if (isPalindrome(cleaned)) {
-            System.out.println("Result: It IS a palindrome (ignoring case/spaces).");
-        } else {
-            System.out.println("Result: It is NOT a palindrome.");
-        }
-
-        scanner.close();
+        String cleaned = preprocess(input);
+        return validate(cleaned);
     }
 
     /**
-     * Normalizes the string by removing all non-alphanumeric characters
-     * and converting everything to lowercase.
+     * Private helper method for string normalization.
      */
-    public static String normalizeString(String input) {
-        if (input == null) return "";
-        // Regex [^a-zA-Z0-9] matches anything that is NOT a letter or a number
-        return input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+    private String preprocess(String str) {
+        return str.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
     }
 
-    public static boolean isPalindrome(String str) {
+    /**
+     * Private logic to perform the comparison.
+     */
+    private boolean validate(String str) {
         int left = 0;
         int right = str.length() - 1;
 
@@ -46,5 +39,29 @@ public class Palindromecheckerapp {
             right--;
         }
         return true;
+    }
+}
+
+public class Palindromecheckerapp {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Creating an instance of the service (Object-Oriented approach)
+        PalindromeService service = new PalindromeService();
+
+        System.out.println("--- UC11: Object-Oriented Palindrome Service ---");
+        System.out.print("Enter a string to validate: ");
+        String userInput = scanner.nextLine();
+
+        // Using the object's behavior
+        boolean isPalindrome = service.checkPalindrome(userInput);
+
+        if (isPalindrome) {
+            System.out.println("Result: The input is a valid palindrome.");
+        } else {
+            System.out.println("Result: The input is NOT a palindrome.");
+        }
+
+        scanner.close();
     }
 }
