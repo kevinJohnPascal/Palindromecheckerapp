@@ -1,67 +1,79 @@
-import java.util.Scanner;
+import java.util.*;
 
-/**
- * Service class to encapsulate Palindrome logic.
- * Demonstrates Encapsulation and Reusability.
- */
-class PalindromeService {
+// 1. Define the Strategy Interface
+interface PalindromeStrategy {
+    boolean isValid(String input);
+}
 
-    /**
-     * Public method to check if a string is a palindrome.
-     * Internal implementation details are hidden from the caller.
-     */
-    public boolean checkPalindrome(String input) {
-        if (input == null) return false;
+// 2. Concrete Strategy: Stack-Based
+class StackStrategy implements PalindromeStrategy {
+    @Override
+    public boolean isValid(String input) {
+        String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        Stack<Character> stack = new Stack<>();
+        for (char c : cleaned.toCharArray()) stack.push(c);
 
-        String cleaned = preprocess(input);
-        return validate(cleaned);
-    }
-
-    /**
-     * Private helper method for string normalization.
-     */
-    private String preprocess(String str) {
-        return str.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-    }
-
-    /**
-     * Private logic to perform the comparison.
-     */
-    private boolean validate(String str) {
-        int left = 0;
-        int right = str.length() - 1;
-
-        while (left < right) {
-            if (str.charAt(left) != str.charAt(right)) {
-                return false;
-            }
-            left++;
-            right--;
+        for (char c : cleaned.toCharArray()) {
+            if (c != stack.pop()) return false;
         }
         return true;
     }
 }
 
+// 3. Concrete Strategy: Deque-Based
+class DequeStrategy implements PalindromeStrategy {
+    @Override
+    public boolean isValid(String input) {
+        String cleaned = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        Deque<Character> deque = new ArrayDeque<>();
+        for (char c : cleaned.toCharArray()) deque.addLast(c);
+
+        while (deque.size() > 1) {
+            if (deque.removeFirst() != deque.removeLast()) return false;
+        }
+        return true;
+    }
+}
+
+// 4. Context Class
+class PalindromeContext {
+    private PalindromeStrategy strategy;
+
+    public void setStrategy(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean executeStrategy(String input) {
+        return strategy.isValid(input);
+    }
+}
+
+// 5. Main Application
 public class Palindromecheckerapp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        PalindromeContext context = new PalindromeContext();
 
-        // Creating an instance of the service (Object-Oriented approach)
-        PalindromeService service = new PalindromeService();
+        System.out.println("--- UC12: Strategy Pattern Palindrome Checker ---");
+        System.out.print("Enter string: ");
+        String text = scanner.nextLine();
 
-        System.out.println("--- UC11: Object-Oriented Palindrome Service ---");
-        System.out.print("Enter a string to validate: ");
-        String userInput = scanner.nextLine();
+        System.out.println("Choose Strategy: 1) Stack 2) Deque");
+        int choice = scanner.nextInt();
 
-        // Using the object's behavior
-        boolean isPalindrome = service.checkPalindrome(userInput);
-
-        if (isPalindrome) {
-            System.out.println("Result: The input is a valid palindrome.");
+        if (choice == 1) {
+            context.setStrategy(new StackStrategy());
+            System.out.println("Using Stack Strategy...");
         } else {
-            System.out.println("Result: The input is NOT a palindrome.");
+            context.setStrategy(new DequeStrategy());
+            System.out.println("Using Deque Strategy...");
         }
 
+        if (context.executeStrategy(text)) {
+            System.out.println("Result: It is a palindrome!");
+        } else {
+            System.out.println("Result: Not a palindrome.");
+        }
         scanner.close();
     }
 }
